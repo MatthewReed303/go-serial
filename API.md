@@ -76,7 +76,7 @@ Methods: `Normalized()` returns the config with the defaults filled in, and `Val
 | `SetRTS(on bool) error` | `TIOCMBIS` / `TIOCMBIC` with `TIOCM_RTS` | `EscapeCommFunction` `SETRTS` / `CLRRTS` |
 | `ModemStatus() (ModemStatus, error)` | `TIOCMGET` | `GetCommModemStatus` |
 
-`ModemStatus` has `CTS`, `DSR`, `RI` and `DCD`, true when asserted. `SetRTS` returns `ErrLineInUse` under `FlowRTSCTS` or with RS-485 enabled, `SetDTR` under `FlowDTRDSR`; a closed port returns `ErrClosed`; a port without modem lines (a pseudo-terminal) returns the operating system's error, wrapped as `serial: set DTR: …`, `serial: set RTS: …` or `serial: modem status: …`.
+`ModemStatus` has `CTS`, `DSR`, `RI` and `DCD`, true when asserted. `Close` does not restore the levels `SetDTR` and `SetRTS` set ([ARCHITECTURE.md](ARCHITECTURE.md#state-saved-and-restored)). `SetRTS` returns `ErrLineInUse` under `FlowRTSCTS` or with RS-485 enabled, `SetDTR` under `FlowDTRDSR`; a closed port returns `ErrClosed`; a port without modem lines (a pseudo-terminal) returns the operating system's error, wrapped as `serial: set DTR: …`, `serial: set RTS: …` or `serial: modem status: …`.
 
 ## `modbus`
 

@@ -86,7 +86,7 @@ Several Go serial libraries exist. This table compares go-serial with [bugst/go-
 | Port enumeration (list available ports) | — | ✅ | — |
 | USB metadata (VID/PID, serial number) | — | ✅ | — |
 | Modem control lines (DTR, RTS, status bits) | ✅ | ✅ | — |
-| Flow control (RTS/CTS, XON/XOFF; DTR/DSR on Windows) | ✅ | partial | — |
+| Flow control (RTS/CTS, XON/XOFF; DTR/DSR on Windows) | ✅ | — | — |
 | License | MIT | BSD-3-Clause | MIT |
 
 ✅ = documented feature · partial = some of it · — = not documented / not available. Based on each project's public documentation as of October 2026. If you spot an inaccuracy, please [open an issue](https://github.com/otfabric/go-serial/issues) and we will correct it.
@@ -131,6 +131,7 @@ Several Go serial libraries exist. This table compares go-serial with [bugst/go-
 - **Cross-platform**: Linux, macOS, Windows, and BSD variants, at the levels listed under [Supported platforms](#supported-platforms).
 - **Protocol-neutral**: no built-in protocol logic. Use it for any serial-based protocol (custom, Modbus RTU, etc.).
 - **RS-485**: optional RS-485 driver configuration where the OS supports it.
+- **Flow control and modem lines**: RTS/CTS and XON/XOFF flow control (DTR/DSR on Windows), and `SetDTR`, `SetRTS` and `ModemStatus` through `ModemLines`. Tested over a PTY and against a replaced ioctl, not on hardware ([LIMITATIONS.md](LIMITATIONS.md#not-verified)).
 
 ## What this library is not
 

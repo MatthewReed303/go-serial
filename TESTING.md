@@ -44,7 +44,8 @@ SERIAL_CHAOS_ITERATIONS=10 go test -race -run TestChaos .
 |---|---|---|
 | `TestReadWrite`, `TestReadAfterHangup` | darwin, linux, freebsd, openbsd, netbsd | PTY loopback. `openbsd` and `netbsd` have no programmatic PTY helper, so these skip there; only `TestReadWrite` can use the environment variables above instead |
 | `close_posix_test.go` | same | `Close` during `Read` and `Write`, after them, twice and from several goroutines: the [lifecycle contract tests](#lifecycle-contract-tests) |
-| `TestChaos*` in `chaos_test.go` | same | Line fragmentation, hangups, random configs, open and close churn, termios restore, write backpressure |
+| `TestChaos*` in `chaos_test.go` | same | Line fragmentation, hangups, random configs (with every flow control), open and close churn, termios restore (with RTS/CTS and XON/XOFF), write backpressure |
+| `TestChaosModemLinesDuringClose` | same | `SetDTR`, `SetRTS` and `ModemStatus` from four goroutines during a `Read` and a `Write`, with `Close` at a random moment: `ErrLineInUse` only for RTS under RTS/CTS, `ErrClosed` for every call that starts after `Close` returned, no descriptor leak |
 | `TestChaos*` in `chaos_linux_test.go` | linux | Signal storms during blocking reads, descriptors above `FD_SETSIZE` |
 | `wait_select_test.go` | darwin, openbsd | Descriptors that do not fit an `FdSet` are refused; the bit arithmetic of the set |
 | `wait_poll_bsd_test.go` | freebsd, netbsd | The conversion of a time-out to `poll`'s argument. No job runs it |
@@ -90,7 +91,7 @@ The rows are those of the contract test matrix in otfabric/engineering `standard
 | L15 | `Shutdown(ctx)` | n/a | No graceful shutdown |
 | L16 | Close racing reconnect | n/a | No reconnect |
 
-I/O after `Close`: `TestIOAfterCloseReturnsErrClosed`; Windows: `TestCloseCancelsIO`.
+I/O after `Close`: `TestIOAfterCloseReturnsErrClosed`; Windows: `TestCloseCancelsIO`. The `ModemLines` methods after `Close`, also on a line that flow control drives: `TestModemLinesInUseAndClosed`, `TestChaosModemLinesDuringClose`; Windows: `TestModemLinesClosedWindows`.
 
 Rows that apply and have no test: L2 on a Windows port (it is tested on its gate), L14 on Windows for a failure after `CreateFile`, where no test opens a port, and L14 for a failure to create the wake pipe.
 
@@ -110,7 +111,7 @@ Coverage is measured on the host. A Linux run does not count Windows, macOS or B
 
 ## Fuzzing
 
-Targets are in `chaos_fuzz_test.go`, `chaos_fuzz_posix_test.go` and `device_name_test.go`, and `make fuzz` discovers them. CI runs each for 10 seconds.
+Targets are in `chaos_fuzz_test.go`, `chaos_fuzz_posix_test.go` and `device_name_test.go`, and `make fuzz` discovers them. CI runs each for 10 seconds. The flow control is fuzzed in `FuzzParseFlowControl`, `FuzzTextRoundTrip`, `FuzzConfigValidate` (never valid as RTS/CTS with RS-485) and `FuzzTermiosAgreesWithValidate` (the termios built carries the flow control asked for; DTR/DSR is refused with `ErrUnsupportedPlatform`).
 
 When a fuzz run fails:
 

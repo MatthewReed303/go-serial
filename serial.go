@@ -16,7 +16,10 @@ One Read and one Write may run concurrently on the same Port (full-duplex).
 Do not run multiple concurrent Readers or Writers. On Windows the port is a
 synchronous handle, so a Write issued while a Read waits may wait for that
 Read to return; use a finite Timeout there when reading and writing from
-separate goroutines.
+separate goroutines. The ModemLines methods may be called from any goroutine,
+also while a Read or Write runs; on Windows such a call may likewise wait for
+a pending Read. Close waits for them as it does for Read and Write, and they
+return ErrClosed after Close.
 
 # Timeouts and Close
 
