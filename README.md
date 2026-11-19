@@ -85,14 +85,15 @@ Several Go serial libraries exist. This table compares go-serial with [bugst/go-
 | Documented concurrency and `Close` contract | ✅ | — | — |
 | Port enumeration (list available ports) | — | ✅ | — |
 | USB metadata (VID/PID, serial number) | — | ✅ | — |
-| Modem control lines (DTR, RTS, status bits) | — | ✅ | — |
+| Modem control lines (DTR, RTS, status bits) | ✅ | ✅ | — |
+| Flow control (RTS/CTS, XON/XOFF; DTR/DSR on Windows) | ✅ | partial | — |
 | License | MIT | BSD-3-Clause | MIT |
 
 ✅ = documented feature · partial = some of it · — = not documented / not available. Based on each project's public documentation as of October 2026. If you spot an inaccuracy, please [open an issue](https://github.com/otfabric/go-serial/issues) and we will correct it.
 
 **Choose go-serial if** you want a small, strictly validated serial transport with typed configuration, RS-485 support and clear concurrency rules, especially as the serial layer under a Modbus RTU library, or as a replacement for goburrow/serial.
 
-**Choose bugst/go-serial if** you need to list ports, read USB device metadata or control modem lines (DTR/RTS) directly. go-serial does not provide these.
+**Choose bugst/go-serial if** you need to list ports or read USB device metadata. go-serial does not provide these.
 
 ---
 
