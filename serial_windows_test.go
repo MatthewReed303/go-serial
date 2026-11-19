@@ -414,6 +414,10 @@ func TestModemLinesClosedWindows(t *testing.T) {
 		t.Errorf("SetDTR under DTR/DSR: %v", err)
 	}
 	p.gate.shut(func() {}, time.Millisecond)
+	// ErrClosed comes first, also for a line that flow control drives.
+	if err := p.SetDTR(true); !errors.Is(err, ErrClosed) {
+		t.Errorf("SetDTR under DTR/DSR after Close: %v", err)
+	}
 	if err := p.SetRTS(true); !errors.Is(err, ErrClosed) {
 		t.Errorf("SetRTS after Close: %v", err)
 	}

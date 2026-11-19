@@ -31,14 +31,14 @@ func (p *port) SetRTS(on bool) error {
 }
 
 func (p *port) setLine(name string, bit int32, on bool) error {
-	if err := lineInUse(&p.lines, name == "RTS"); err != nil {
-		return err
-	}
 	fd, _, err := p.begin()
 	if err != nil {
 		return err
 	}
 	defer p.end()
+	if err := lineInUse(&p.lines, name == "RTS"); err != nil {
+		return err
+	}
 	req := uintptr(syscall.TIOCMBIC)
 	if on {
 		req = syscall.TIOCMBIS

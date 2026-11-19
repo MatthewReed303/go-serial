@@ -312,13 +312,13 @@ func (p *port) SetRTS(on bool) error {
 }
 
 func (p *port) setLine(name string, rts, on bool) error {
-	if err := lineInUse(&p.lines, rts); err != nil {
-		return err
-	}
 	if err := p.gate.begin(); err != nil {
 		return err
 	}
 	defer p.gate.end()
+	if err := lineInUse(&p.lines, rts); err != nil {
+		return err
+	}
 	if err := escapeCommFunction(p.handle, commEscape(rts, on)); err != nil {
 		return fmt.Errorf("serial: set %s: %w", name, err)
 	}

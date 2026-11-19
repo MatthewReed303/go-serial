@@ -119,8 +119,13 @@ func TestModemLinesInUseAndClosed(t *testing.T) {
 		t.Errorf("ioctls sent: %d; want 1 (the SetDTR)", len(m.reqs))
 	}
 
-	p.lines = Config{}
+	// ErrClosed comes first, also for a line that flow control drives.
+	p.lines = Config{FlowControl: FlowRTSCTS}
 	p.closed = true
+	if err := p.SetRTS(true); !errors.Is(err, ErrClosed) {
+		t.Errorf("SetRTS under RTS/CTS after Close: %v", err)
+	}
+	p.lines = Config{}
 	if err := p.SetDTR(true); !errors.Is(err, ErrClosed) {
 		t.Errorf("SetDTR after Close: %v", err)
 	}
